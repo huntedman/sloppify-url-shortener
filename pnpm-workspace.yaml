@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+
+catalog:
+  eslint: "^9.39.0"
+  typescript: "5.9.3"

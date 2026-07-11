@@ -1,12 +1,27 @@
 {
   "name": "sloppify-url-shortener",
-  "version": "1.0.0",
-  "description": "Just an url shortener",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Just a URL shortener",
+  "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "turbo run lint typecheck && prettier . --check"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "prettier": "3.9.5",
+    "prettier-plugin-tailwindcss": "0.8.0",
+    "turbo": "^2.10.4"
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
+  },
+  "packageManager": "pnpm@11.11.0"
 }
