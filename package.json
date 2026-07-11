@@ -10,6 +10,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run typecheck",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "check": "turbo run lint typecheck && prettier . --check"
@@ -17,7 +19,8 @@
   "devDependencies": {
     "prettier": "3.9.5",
     "prettier-plugin-tailwindcss": "0.8.0",
-    "turbo": "^2.10.4"
+    "turbo": "^2.10.4",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=24.0.0",
