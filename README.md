@@ -10,6 +10,7 @@ Response - Original URL: https://docs.google.com/document/d/abcdefg
 As an user I want:
 
 - to submit a link and receive a shortened link in return
+- to be redirected to the original link when shortlink is opened
 - to use the link shortener on mobile (responsive design, etc...)
 - the app to be production ready (deployed somewhere)
 - the app to be clear and easy to use (UI/UX)
