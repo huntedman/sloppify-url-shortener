@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  shortenLinkRequestSchema,
-  type ShortenLinkErrorResponse,
-} from "@sloppify/shared-contracts";
+import { shortenLinkRequestSchema } from "@sloppify/shared-contracts";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SubmitEvent } from "react";
@@ -11,8 +8,10 @@ import type { SubmitEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Wordmark } from "@/components/ui/wordmark";
-
-type ShortenLinkResponse = { shortLink: string } | ShortenLinkErrorResponse;
+import {
+  shortLinksApi,
+  ShortLinksApiError,
+} from "@/features/short-links/api/short-links-api";
 
 export default function Page() {
   const router = useRouter();
@@ -36,29 +35,20 @@ export default function Page() {
     setError(null);
 
     try {
-      const response = await fetch("/api/shorten-link", {
-        body: JSON.stringify(payload.data),
-        headers: { "content-type": "application/json" },
-        method: "POST",
-      });
-      const result = (await response.json()) as ShortenLinkResponse;
-
-      if (!response.ok || !("shortLink" in result)) {
-        setError(
-          "error" in result
-            ? result.error.message
-            : "Unable to shorten this link.",
-        );
-        return;
-      }
+      const result = await shortLinksApi.create(payload.data);
 
       const searchParams = new URLSearchParams({
         shortLink: result.shortLink,
       });
 
       router.push(`/shortened?${searchParams.toString()}`);
-    } catch {
-      setError("Unable to reach the shortening service. Please try again.");
+    } catch (error) {
+      if (error instanceof ShortLinksApiError) {
+        setError(error.message);
+      } else {
+        console.error("Unexpected error while creating a short link.", error);
+        setError("Unable to reach the shortening service. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

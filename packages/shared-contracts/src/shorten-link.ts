@@ -20,10 +20,17 @@ export const shortenLinkErrorResponseSchema = z.object({
   error: shortenLinkApiErrorSchema,
 });
 
+export const shortenLinkSuccessResponseSchema = z.object({
+  shortLink: z.url(),
+});
+
 export type ShortenLinkRequest = z.infer<typeof shortenLinkRequestSchema>;
 export type ShortenLinkApiError = z.infer<typeof shortenLinkApiErrorSchema>;
 export type ShortenLinkErrorResponse = z.infer<
   typeof shortenLinkErrorResponseSchema
+>;
+export type ShortenLinkSuccessResponse = z.infer<
+  typeof shortenLinkSuccessResponseSchema
 >;
 
 export const shortenLinkApiErrors = {

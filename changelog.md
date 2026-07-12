@@ -66,3 +66,27 @@ The contract would be shared, because this way we can do validation on both fron
 
 **Establish reusable UI components**
 Eventhough we use style tokens to style our UI, it's still a good practice to establish a componenting system for the different UI elements of our app. Because as our app and the amount of style tokens grow, so does the amount of permutations for combining theses style tokens into UI elements grow. We want to have a single source of truth for some primitives, e.g "button", "input", "title", etc...
+
+## Feat: Break the frontend's coupling to nextjs "api" routes
+We keep treating elements coupled together as something to avoid. Well at least, I do personally. Why? Because they become patterns in our codebase that others will become reliant on. Being reliant on wrong principles will cause immeasurable effects down the line.
+
+In this instance I don't mean the word immeasurable in the context of "something so big that it cannot be measured", but rather in the context that "the exact size of the effect is difficult it not possible to measure".
+
+For example, I can exactly measure the time of how long it would take me to factor out, how we currently call our backend API for getting a shortened link. It took me less than a minute to remove this coupling.
+
+Let's say now 6 months pass, and this sort of pattern becomes the norm in our codebase and we don't have one API endpoint anymore, but 10 and 5 other developers in 10 different places rely on interfacing with our backend by inlining API calls like so:
+```ts
+const response = await fetch("/api/shorten-link", {
+  body: JSON.stringify(payload.data),
+  headers: { "content-type": "application/json" },
+  method: "POST",
+});
+
+const result = (await response.json()) as ShortenLinkResponse;
+```
+On top of this, it doesn't even make sense in the first place, for our page to have to know the details about the exact order of operations and the ceremony for calling our api. It just needs to know what does our API expect and what does it return.
+
+And now lets assume our demand grows drastically and we need to switch from our current nextJS api routes to a dedicated API server in 5 different places. It would definitely take more than a minute to switch. I think a wider philosophical discussion is to be had here: as humans, we often only measure the immediate costs of fixing something and not care enough about the cost over time. In other words we can be blinded by the "present bias" or "Penny-wise, pound foolish" logical line of reasoning. 
+
+That being said... every approach has it's limits and we should definitely focus on getting useful work in.
+I know it can seem a bit hyperbolic or even paranoid, but I just wanted to use the preceeding example to illustrate my thinking process a bit more.
