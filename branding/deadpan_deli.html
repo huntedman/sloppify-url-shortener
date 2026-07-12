@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBF7EF;color:#26221B;font-family:'Space Grotesk',sans-serif;min-height:100vh}
+a{color:#D6452B}a:hover{color:#26221B}
+.serif{font-family:'Instrument Serif',serif}
+.page{max-width:760px;margin:0 auto;padding:0 32px 80px;display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0}
+.mark{font-size:24px}
+.navlink{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;text-decoration:none;color:#26221B}
+.hero{padding:72px 0 48px;text-align:center}
+.open{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:#26221B;background:#E3A81C;border-radius:999px;padding:6px 16px}
+.h1{font-size:58px;line-height:1.05;font-weight:400;margin:24px 0 14px}
+.sub{font-size:17px;line-height:1.55;color:#6e6552;max-width:440px;margin:0 auto}
+.bar{display:flex;border:2px solid #26221B;border-radius:4px;overflow:hidden;background:#fff;margin-top:40px}
+.urlin{flex:1;border:none;outline:none;padding:18px 20px;font-family:'Space Grotesk',sans-serif;font-size:15px;color:#26221B;background:transparent;min-width:0}
+.slice{background:#26221B;color:#E3A81C;border:none;padding:18px 26px;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0}
+.slice:hover{background:#3a3428}
+.hint{font-size:13px;color:#ada180;margin-top:12px}
+.orders{margin-top:56px}
+.ordhead{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid #26221B;padding-bottom:10px}
+.ordtitle{font-size:22px;font-style:italic}
+.count{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#ada180;font-weight:500}
+.row{display:flex;align-items:center;gap:16px;padding:16px 4px;border-bottom:1px dashed #ddd3bd}
+.short{font-weight:700;font-size:15px;color:#D6452B;text-decoration:none;white-space:nowrap}
+.long{flex:1;font-size:13px;color:#ada180;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.clicks{font-size:13px;color:#6e6552;white-space:nowrap}
+.copybtn{border:1px solid #ddd3bd;background:transparent;border-radius:4px;padding:5px 12px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;color:#26221B;cursor:pointer}
+.copybtn:hover{background:#f1ead9}
+.empty{text-align:center;padding:48px 0;color:#ada180;font-size:15px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#26221B;color:#FBF7EF;border-radius:4px;padding:12px 22px;font-size:14px;box-shadow:0 8px 24px rgba(38,34,27,.25)}
+.foot{margin-top:auto;padding-top:72px;text-align:center;font-size:13px;color:#ada180}
+</style>
+</helmet>
+<div class="page">
+<nav class="nav"><div class="mark serif">Sloppify <span style="font-style:italic;color:#D6452B">&amp;Co.</span></div><a class="navlink" href="#">The board</a></nav>
+<header class="hero">
+<span class="open">Now serving № {{ ticket }}</span>
+<h1 class="h1 serif">Links, <span style="font-style:italic;color:#D6452B">sliced thin</span>.</h1>
+<p class="sub">Hand us any overstuffed URL. We trim it to fourteen characters. No preservatives, no tracking pixels you didn't ask for.</p>
+<form class="bar" onSubmit="{{ slice }}"><input class="urlin" placeholder="https://the-whole-hoagie.com/with/everything/on/it…" value="{{ url }}" onChange="{{ typed }}"><button class="slice" type="submit">Slice it</button></form>
+<div class="hint">No account required. We simply don't want to know that much about you.</div>
+</header>
+<section class="orders">
+<div class="ordhead"><div class="ordtitle serif">Today's cuts</div><div class="count">{{ orderCount }}</div></div>
+<sc-if value="{{ hasOrders }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ orders }}" as="o" hint-placeholder-count="3">
+<div class="row"><a class="short" href="#">{{ o.short }}</a><span class="long">{{ o.long }}</span><span class="clicks">{{ o.clicks }}</span><button class="copybtn" onClick="{{ o.copy }}">{{ o.copyLabel }}</button></div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ noOrders }}"><div class="empty">The counter is clean. Bring us a link, any link.</div></sc-if>
+</section>
+<sc-if value="{{ toast }}"><div class="toast">{{ toast }}</div></sc-if>
+<footer class="foot">Sloppify &amp;Co. · Fine link compression · <a href="#">house policies</a></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;domain&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;slp.fy&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Brand&quot;}}">
+class Component extends DCLogic {
+  state = {
+    url: '',
+    toast: null,
+    copied: null,
+    ticket: 4082,
+    orders: [
+      { short: 'slp.fy/no-1-special', long: 'https://github.com/example/deploy-scripts/blob/main/prod/rollout.md', clicks: 214 },
+      { short: 'slp.fy/on-rye', long: 'https://docs.example.com/api/reference/v2/endpoints?section=auth', clicks: 88 },
+      { short: 'slp.fy/extra-thin', long: 'https://calendar.example.com/team/standup/join?id=99182734', clicks: 12 },
+    ],
+  };
+  slug() {
+    const words = ['thin-cut','the-usual','to-go','no-crust','deluxe','half-order','open-face','day-old'];
+    return words[Math.floor(Math.random() * words.length)] + '-' + Math.random().toString(36).slice(2, 4);
+  }
+  showToast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 2600);
+  }
+  renderVals() {
+    const domain = this.props.domain ?? 'slp.fy';
+    const orders = this.state.orders.map((o, i) => ({
+      ...o,
+      clicks: o.clicks + (o.clicks === 1 ? ' visit' : ' visits'),
+      copyLabel: this.state.copied === i ? 'Copied' : 'Copy',
+      copy: () => {
+        navigator.clipboard && navigator.clipboard.writeText('https://' + o.short).catch(() => {});
+        this.setState({ copied: i });
+        this.showToast('Copied. Wrapped it up for you.');
+      },
+    }));
+    return {
+      url: this.state.url,
+      ticket: this.state.ticket.toLocaleString(),
+      typed: (e) => this.setState({ url: e.target.value }),
+      slice: (e) => {
+        e.preventDefault();
+        const u = this.state.url.trim();
+        if (!u) { this.showToast('An empty plate. Bold, but we need a link.'); return; }
+        const short = domain + '/' + this.slug();
+        this.setState((s) => ({
+          orders: [{ short, long: u, clicks: 0 }, ...s.orders],
+          url: '',
+          copied: null,
+          ticket: s.ticket + 1,
+        }));
+        this.showToast('Order up. ' + u.length + ' characters, trimmed to ' + short.length + '.');
+      },
+      orders,
+      hasOrders: orders.length > 0,
+      noOrders: orders.length === 0,
+      orderCount: orders.length + (orders.length === 1 ? ' order' : ' orders'),
+      toast: this.state.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

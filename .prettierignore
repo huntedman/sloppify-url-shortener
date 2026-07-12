@@ -1,6 +1,7 @@
 .next
 .turbo
 build
+branding
 coverage
 dist
 node_modules

@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Sloppify",
-  description: "Next.js project scaffold",
+  description: "Sloppify, the hottest URL shortener on the web",
 };
 
 type RootLayoutProps = Readonly<{
@@ -15,7 +15,7 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-canvas text-foreground">{children}</body>
     </html>
   );
 }

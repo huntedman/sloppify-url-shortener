@@ -1,1 +1,30 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
+
+@layer base {
+  html {
+    background: var(--ds-color-canvas);
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  a {
+    color: var(--ds-color-link);
+  }
+
+  a:hover {
+    color: var(--ds-color-link-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ds-color-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    color: var(--ds-color-highlight-foreground);
+    background: var(--ds-color-highlight);
+  }
+}

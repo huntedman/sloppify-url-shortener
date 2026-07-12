@@ -1,0 +1,66 @@
+/*
+ * Raw palette values are private to this file. Application code should use
+ * the semantic Tailwind utilities exposed by the @theme block below.
+ */
+:root {
+  color-scheme: light;
+
+  /* Brand palette */
+  --palette-paper: #fbf7ef;
+  --palette-white: #ffffff;
+  --palette-ink: #26221b;
+  --palette-ink-hover: #3a3428;
+  --palette-tomato: #d6452b;
+  --palette-tomato-readable: #c94028;
+  --palette-mustard: #e3a81c;
+  --palette-taupe: #6e6552;
+  --palette-taupe-light: #998d72;
+  --palette-sand: #ddd3bd;
+  --palette-sand-light: #f1ead9;
+
+  /* Semantic colors */
+  --ds-color-canvas: var(--palette-paper);
+  --ds-color-surface: var(--palette-white);
+  --ds-color-surface-subtle: var(--palette-sand-light);
+  --ds-color-foreground: var(--palette-ink);
+  --ds-color-foreground-muted: var(--palette-taupe);
+  --ds-color-border: var(--palette-taupe-light);
+  --ds-color-border-subtle: var(--palette-sand);
+  --ds-color-border-strong: var(--palette-ink);
+  --ds-color-action: var(--palette-ink);
+  --ds-color-action-hover: var(--palette-ink-hover);
+  --ds-color-action-foreground: var(--palette-mustard);
+  --ds-color-accent: var(--palette-tomato);
+  --ds-color-link: var(--palette-tomato-readable);
+  --ds-color-link-hover: var(--palette-ink);
+  --ds-color-highlight: var(--palette-mustard);
+  --ds-color-highlight-foreground: var(--palette-ink);
+  --ds-color-focus: var(--palette-tomato);
+  --ds-color-inverse: var(--palette-ink);
+  --ds-color-inverse-foreground: var(--palette-paper);
+}
+
+@theme inline {
+  /* Remove Tailwind's default palette so only semantic colors are available. */
+  --color-*: initial;
+
+  --color-canvas: var(--ds-color-canvas);
+  --color-surface: var(--ds-color-surface);
+  --color-surface-subtle: var(--ds-color-surface-subtle);
+  --color-foreground: var(--ds-color-foreground);
+  --color-foreground-muted: var(--ds-color-foreground-muted);
+  --color-border: var(--ds-color-border);
+  --color-border-subtle: var(--ds-color-border-subtle);
+  --color-border-strong: var(--ds-color-border-strong);
+  --color-action: var(--ds-color-action);
+  --color-action-hover: var(--ds-color-action-hover);
+  --color-action-foreground: var(--ds-color-action-foreground);
+  --color-accent: var(--ds-color-accent);
+  --color-link: var(--ds-color-link);
+  --color-link-hover: var(--ds-color-link-hover);
+  --color-highlight: var(--ds-color-highlight);
+  --color-highlight-foreground: var(--ds-color-highlight-foreground);
+  --color-focus: var(--ds-color-focus);
+  --color-inverse: var(--ds-color-inverse);
+  --color-inverse-foreground: var(--ds-color-inverse-foreground);
+}
