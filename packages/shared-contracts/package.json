@@ -1,5 +1,5 @@
 {
-  "name": "@sloppify/domain-core",
+  "name": "@sloppify/shared-contracts",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "node": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
@@ -22,10 +23,12 @@
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
   "devDependencies": {
     "@sloppify/eslint-config": "workspace:*",
     "@sloppify/typescript-config": "workspace:*",
-    "@types/node": "^24.13.3",
     "eslint": "catalog:",
     "typescript": "catalog:"
   }

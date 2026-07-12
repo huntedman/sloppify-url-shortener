@@ -1,13 +1,76 @@
-export default function Home() {
+"use client";
+
+import {
+  shortenLinkRequestSchema,
+  type ShortenLinkErrorResponse,
+} from "@sloppify/shared-contracts";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { SubmitEvent } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Wordmark } from "@/components/ui/wordmark";
+
+type ShortenLinkResponse = { shortLink: string } | ShortenLinkErrorResponse;
+
+export default function Page() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const payload = shortenLinkRequestSchema.safeParse({
+      url: formData.get("url"),
+    });
+
+    if (!payload.success) {
+      setError("Enter a valid URL.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/shorten-link", {
+        body: JSON.stringify(payload.data),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+      const result = (await response.json()) as ShortenLinkResponse;
+
+      if (!response.ok || !("shortLink" in result)) {
+        setError(
+          "error" in result
+            ? result.error.message
+            : "Unable to shorten this link.",
+        );
+        return;
+      }
+
+      const searchParams = new URLSearchParams({
+        shortLink: result.shortLink,
+      });
+
+      router.push(`/shortened?${searchParams.toString()}`);
+    } catch {
+      setError("Unable to reach the shortening service. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center px-5 py-16 sm:px-8">
       <section
         aria-labelledby="landing-heading"
         className="w-full max-w-2xl text-center"
       >
-        <p className="font-serif text-5xl font-medium tracking-tight sm:text-6xl">
-          Sloppify<span className="text-accent">.</span>
-        </p>
+        <Wordmark />
 
         <h1
           className="mt-8 text-3xl font-medium tracking-tight sm:text-4xl"
@@ -20,28 +83,38 @@ export default function Home() {
           Paste a long URL and get a clean, shareable link.
         </p>
 
-        <form aria-label="Shorten a URL" className="mx-auto mt-10 w-full">
+        <form
+          aria-busy={isSubmitting}
+          aria-label="Shorten a URL"
+          className="mx-auto mt-10 w-full"
+          onSubmit={handleSubmit}
+        >
           <div className="flex flex-col gap-3 sm:flex-row">
             <label className="sr-only" htmlFor="url">
               URL to shorten
             </label>
-            <input
+            <Input
               autoComplete="url"
-              className="min-w-0 flex-1 rounded-full border border-border-strong bg-surface px-6 py-4 text-base text-foreground transition-colors placeholder:text-foreground-muted focus-visible:border-focus"
+              className="min-w-0 flex-1"
               id="url"
               name="url"
               placeholder="https://example.com/a/very/long/link"
               required
               spellCheck={false}
             />
-            <button
-              className="rounded-full bg-action px-7 py-4 text-base font-semibold whitespace-nowrap text-action-foreground transition-colors hover:bg-action-hover"
-              type="submit"
-            >
-              Shorten link
-            </button>
+            <Button disabled={isSubmitting} type="submit">
+              {isSubmitting ? "Shortening…" : "Shorten link"}
+            </Button>
           </div>
         </form>
+
+        <div aria-live="polite" className="mt-5">
+          {error ? (
+            <p className="text-sm text-danger" role="alert">
+              {error}
+            </p>
+          ) : null}
+        </div>
       </section>
     </main>
   );

@@ -33,6 +33,7 @@
   --ds-color-accent: var(--palette-tomato);
   --ds-color-link: var(--palette-tomato-readable);
   --ds-color-link-hover: var(--palette-ink);
+  --ds-color-danger: var(--palette-tomato-readable);
   --ds-color-highlight: var(--palette-mustard);
   --ds-color-highlight-foreground: var(--palette-ink);
   --ds-color-focus: var(--palette-tomato);
@@ -58,6 +59,7 @@
   --color-accent: var(--ds-color-accent);
   --color-link: var(--ds-color-link);
   --color-link-hover: var(--ds-color-link-hover);
+  --color-danger: var(--ds-color-danger);
   --color-highlight: var(--ds-color-highlight);
   --color-highlight-foreground: var(--ds-color-highlight-foreground);
   --color-focus: var(--ds-color-focus);

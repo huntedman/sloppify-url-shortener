@@ -10,8 +10,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run typecheck",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest --passWithNoTests",
+    "test": "turbo run build --filter=@sloppify/shared-contracts --filter=@sloppify/domain-core && vitest run --passWithNoTests",
+    "test:watch": "turbo run build --filter=@sloppify/shared-contracts --filter=@sloppify/domain-core && vitest --passWithNoTests",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "check": "turbo run lint typecheck && prettier . --check"
@@ -20,6 +20,7 @@
     "prettier": "3.9.5",
     "prettier-plugin-tailwindcss": "0.8.0",
     "turbo": "^2.10.4",
+    "typescript": "catalog:",
     "vitest": "^4.1.10"
   },
   "engines": {

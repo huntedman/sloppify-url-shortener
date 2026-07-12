@@ -1,8 +1,7 @@
 import type { ShortLink } from "../../../domain/short-link.js";
-import type { OriginalUrl } from "../../../domain/url.js";
 
 export interface CreateShortLinkCommand {
-  url: OriginalUrl;
+  url: string;
 }
 
 export interface CreateShortLinkResult {
