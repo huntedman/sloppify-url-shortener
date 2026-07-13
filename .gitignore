@@ -30,3 +30,6 @@ yarn-error.log*
 # Local files
 .DS_Store
 *.pem
+
+# Supabase CLI state
+/supabase/.temp/

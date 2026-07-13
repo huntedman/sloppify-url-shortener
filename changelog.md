@@ -142,3 +142,34 @@ But for now it's purely cosmetic, because:
 2) We don't redirect when actually opening the shortened link
 
 Let's tackle both of these issues in the next commit.
+
+## Feat: Add Supabase and tables
+As mentioned in the README.md, for the following app, in order to save time, a database provider will be used: Supabase. 
+
+Although cloud providers, such as AWS, provide us greater control over hosting and capacity management, and perhaps even help in regulatory environments, our use case and operating environment is relatively simple and straightforward. 
+
+But care should still be taken, to ensure first of all that we don't allow public access to the database itself, but rather expose it via an API. Secondly, we still want to employ "defensive coding" strategies in case we ever want to switch implementations, should we outgrow supabase or should supabase diverge too far from their current terms that we find acceptable. 
+
+As a business, over reliance on a single supplier makes you fragile and ideally should be avoided.
+
+For our purposes, we installed the @supabase/server package to the repo. We will not use it directly, but rather wrap it in OUR ports and adapters architecture. 
+
+Indirection? Yes. But thought experiment, imagine: 
+- You are a coffee shop and you sell coffee to customers
+- You buy a coffee beans, a commodity, from another business
+
+Would you be happy that your bean supplier would dictate the terms between you and your customer?
+
+Would you sign a contract that would state "You must remain an exclusive partner and you can never buy beans from any other supplier." Perhaps if I was under immense time pressure or I just wanted to start a pop up coffee stall for a week, to test the market, then yes.
+
+Miscellaneous changes:
+
+**Update README.md**
+Added instructions on how to init and run the project on local machine, given the newly added supabase dependency.
+
+**Add migrations**
+Good practice any time we have to deal with relational databases. Thankfully supabase makes this process straightforward.
+
+**Add Supabase specific repository for storing created links**
+Thanks to the ports and adapters approach it was very straghtforward to set up a relational database layer to the existing app.
+

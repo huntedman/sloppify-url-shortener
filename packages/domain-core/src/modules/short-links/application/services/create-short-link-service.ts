@@ -1,3 +1,4 @@
+import { OriginalUrl } from "../../domain/original-url.js";
 import type {
   CreateShortLinkCommand,
   CreateShortLinkResult,
@@ -5,27 +6,36 @@ import type {
 } from "../ports/inbound/create-short-link-use-case.js";
 
 import type { ShortCodeGenerator } from "../ports/outbound/short-code-generator.js";
+import { ShortLinkRepository } from "../ports/outbound/short-link-repository.js";
 
 export interface CreateShortLinkServiceProps {
   shortCodeGenerator: ShortCodeGenerator;
+  shortLinkRepository: ShortLinkRepository;
   baseDomain: string;
 }
 
 export class CreateShortLinkService implements CreateShortLinkUseCase {
   private _shortCodeGenerator: ShortCodeGenerator;
   private _baseDomain: string;
+  private _shortLinkRepository: ShortLinkRepository;
 
   constructor(props: CreateShortLinkServiceProps) {
     this._shortCodeGenerator = props.shortCodeGenerator;
     this._baseDomain = props.baseDomain;
+    this._shortLinkRepository = props.shortLinkRepository;
   }
 
-  // Override ESLint until next commit
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createShortLink(command: CreateShortLinkCommand): CreateShortLinkResult {
+  async createShortLink(
+    command: CreateShortLinkCommand,
+  ): Promise<CreateShortLinkResult> {
+    const originalUrl = OriginalUrl.create(command.url);
     const shortCode = this._shortCodeGenerator.generate();
-    const shortURL = `${this._baseDomain.toString()}/${shortCode}`;
 
-    return { shortLink: shortURL };
+    await this._shortLinkRepository.create({
+      originalUrl,
+      shortCode,
+    });
+
+    return { shortLink: `${this._baseDomain.toString()}/${shortCode}` };
   }
 }

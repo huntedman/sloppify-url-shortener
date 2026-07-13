@@ -1,15 +1,25 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { shortenLinkErrorResponseSchema } from "@sloppify/shared-contracts";
 import { CreateShortLinkService } from "@sloppify/domain-core";
 
 import { SystemClock } from "./adapters/system-clock.js";
+import { SupabaseShortLinkRepository } from "./adapters/supabase-short-link-repository.js";
 import { POST } from "./route.js";
 
 vi.hoisted(() => {
   process.env.SHORT_LINK_BASE_URL = "https://sloppify.com";
+  process.env.SUPABASE_URL = "http://127.0.0.1:54321";
+  process.env.SUPABASE_SECRET_KEY = "test-secret-key";
 });
 
 describe("POST /api/shorten-link", () => {
+  beforeEach(() => {
+    vi.spyOn(
+      SupabaseShortLinkRepository.prototype,
+      "create",
+    ).mockResolvedValue();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });

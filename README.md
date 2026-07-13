@@ -89,3 +89,131 @@ This repository is scaffolded as a pnpm and Turborepo monorepo. It requires Node
 - `packages/eslint-config` and `packages/typescript-config` contain shared tooling.
 
 Run `nvm use` and `corepack enable` once to select the pinned runtime and package manager. Install dependencies with `pnpm install`, then use `pnpm dev` for local development. Run `pnpm check` to lint, type-check, and verify formatting, or `pnpm build` to create a production build.
+
+### Set up Supabase locally
+
+Local development uses a self-contained Supabase stack and database running in
+Docker. It does not read from or write to the hosted production database. The
+schema is shared between environments through the migration files in
+`supabase/migrations`.
+
+The following setup requires a running Docker-compatible container runtime,
+such as Docker Desktop, OrbStack, Rancher Desktop, or Podman. Run every command
+below from the repository root (the folder which contains `pnpm-workspace.yaml`)
+
+#### 1. Install the dependencies
+
+```bash
+nvm use
+corepack enable
+pnpm install
+```
+
+The Supabase CLI is installed as a workspace development dependency. This
+repository already contains `supabase/config.toml`, so a fresh clone does not
+need `supabase init`, `supabase login`, or `supabase link` for local development.
+
+#### 2. Start the local Supabase stack
+
+Make sure the container runtime is running, then execute:
+
+```bash
+pnpm exec supabase start
+```
+
+The first start downloads the required container images, starts the local
+Postgres database and Supabase services, and applies the migrations. The command
+prints the local project URL, publishable key, secret key, database URL, and
+Studio URL. Display the credentials again at any time with:
+
+```bash
+pnpm exec supabase status
+```
+
+Supabase Studio is available by default at <http://127.0.0.1:54323>.
+
+#### 3. Configure the Next.js application
+
+Create the ignored local environment file from the example:
+
+```bash
+cp apps/frontend/.env.example apps/frontend/.env.local
+```
+
+Populate it with the local URL and secret printed by `supabase start` or
+`supabase status`:
+
+```dotenv
+SHORT_LINK_BASE_URL=http://localhost:3000
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_SECRET_KEY=<LOCAL_SECRET_KEY>
+```
+
+The current server-only database adapter does not require the publishable key or
+JWKS URL. Keep the secret key in `.env.local`; never expose it through a
+`NEXT_PUBLIC_` environment variable.
+
+#### 4. Rebuild the local database when the schema changes
+
+The first `supabase start` applies the committed migrations automatically. To
+recreate the database and reapply all migrations later, run:
+
+```bash
+pnpm exec supabase db reset
+```
+
+This deletes local data only. It does not reset the hosted project.
+
+#### 5. Generate the TypeScript database types
+
+Generate the `Database` type from the migrated local schema:
+
+```bash
+pnpm exec supabase gen types typescript --local \
+  > apps/frontend/app/api/database.types.ts
+```
+
+The generated file validates table names, columns, inserts, and query results.
+It contains schema information rather than credentials or row data and should
+be committed. Regenerate it after every schema migration, and do not edit it
+manually.
+
+#### 6. Start the application
+
+```bash
+pnpm dev
+```
+
+The application now uses the local Supabase database through the values in
+`apps/frontend/.env.local`.
+
+#### 7. Stop Supabase
+
+```bash
+pnpm exec supabase stop
+```
+
+Stopping the containers preserves local database data for the next start.
+
+#### Creating subsequent migrations
+
+Create a timestamped migration file:
+
+```bash
+pnpm exec supabase migration new <MIGRATION_NAME>
+```
+
+Add the SQL to the generated file under `supabase/migrations`, then test and
+regenerate the types:
+
+```bash
+pnpm exec supabase db reset
+pnpm exec supabase gen types typescript --local \
+  > apps/frontend/app/api/database.types.ts
+```
+
+Do not edit a migration after it has been applied to a shared environment;
+create a new migration instead. `supabase db push` without `--local` targets a
+linked hosted project and is deliberately not part of the local setup. See the
+[Supabase local development documentation](https://supabase.com/docs/guides/local-development)
+for more detail.

@@ -8,7 +8,12 @@ import {
   InvalidOriginalUrlError,
   UnixTimestampShortCodeGenerator,
 } from "@sloppify/domain-core";
+import { createAdminClient } from "@supabase/server/core";
+
+import type { Database } from "../database.types";
+
 import { SystemClock } from "./adapters/system-clock";
+import { SupabaseShortLinkRepository } from "./adapters/supabase-short-link-repository";
 
 export const runtime = "nodejs";
 
@@ -18,11 +23,19 @@ if (!baseDomain) {
   throw new Error("SHORT_LINK_BASE_URL is not configured.");
 }
 
+const client = createAdminClient<Database>();
+
 const systemClock = new SystemClock();
 const shortCodeGenerator = new UnixTimestampShortCodeGenerator(systemClock);
+
+const shortLinkRepository = new SupabaseShortLinkRepository({
+  client,
+});
+
 const createShortLinkService = new CreateShortLinkService({
   shortCodeGenerator,
   baseDomain,
+  shortLinkRepository,
 });
 
 function badRequest(error: ShortenLinkApiError): Response {
@@ -52,7 +65,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const result = createShortLinkService.createShortLink({
+    const result = await createShortLinkService.createShortLink({
       url: parsedBody.data.url,
     });
 

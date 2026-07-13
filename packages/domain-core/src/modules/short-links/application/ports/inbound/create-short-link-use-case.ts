@@ -9,5 +9,7 @@ export interface CreateShortLinkResult {
 }
 
 export interface CreateShortLinkUseCase {
-  createShortLink(command: CreateShortLinkCommand): CreateShortLinkResult;
+  createShortLink(
+    command: CreateShortLinkCommand,
+  ): Promise<CreateShortLinkResult>;
 }

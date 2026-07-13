@@ -4,13 +4,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["SHORT_LINK_BASE_URL"],
+      "env": ["SHORT_LINK_BASE_URL", "SUPABASE_SECRET_KEY", "SUPABASE_URL"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"]
     },
     "dev": {
       "dependsOn": ["^build"],
-      "env": ["SHORT_LINK_BASE_URL"],
+      "env": ["SHORT_LINK_BASE_URL", "SUPABASE_SECRET_KEY", "SUPABASE_URL"],
       "cache": false,
       "persistent": true
     },
