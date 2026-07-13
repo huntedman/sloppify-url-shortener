@@ -90,3 +90,38 @@ And now lets assume our demand grows drastically and we need to switch from our 
 
 That being said... every approach has it's limits and we should definitely focus on getting useful work in.
 I know it can seem a bit hyperbolic or even paranoid, but I just wanted to use the preceeding example to illustrate my thinking process a bit more.
+
+## Feat: Implement our own ShortCode generator
+
+Let's take a lookt at what a bit.ly link looks like.
+I created some links on different days.
+
+bit.ly/4vzDxfa
+bit.ly/4eYHjtr
+bit.ly/4eWk8jk
+bit.ly/4yiKtzM
+bit.ly/4510mNG
+bit.ly/4fwG3hd
+
+The Bitly codes show no directly observable time based ordering. This does not rule out timestamps or sequences as internal inputs, but it can suggest that the public identifier is deliberately unique and opaque.
+
+From these examples, we can probably assume that the generated codes are:
+
+- 7 characters long 
+- Alphanumerical and case-sensitive (A-Z | a-z | 0-9)
+
+Meaning if all lowercase and uppercase leters and digits are allowed the alphabet would be base62:
+26 lowercase characters
+26 uppercase characters
+10 numerical characters
+= 62 possible combinations 
+Given 7 characters, it means there's 62^7 possible combinations.
+Which is approximately ~3.52 trillion combinations.
+
+A Unix timestamp in milliseconds currently fits within this numeric range, so timestamp encoding is one possible approach. It's a simple one to implement, can be scaled across different servers (if database unique constraint is in place) and we can easily extend or modify it as long as we don't give any guarantees about the id's to our users. It is an intentionally simple, time based identifier, not a random or secure identifier.
+
+The draw back of our approach is that we're going to run out of ID's by the year 2081. We're also leaving a lot of ID's unused, so we will have exhausted half of the remaining pool of unique ID's by ~2053, and WHAT IF our service become so popular that we're generating more than 8.64e+7 links per day? Well... I'd say let's cross that bridge when we get even remotely close to it and deploy the necessary engineering resources then. 
+
+If we somehow become popular in a year, we will have a deterministic amount exhausted ID's and we can figure a way around it. Let's keep it simple for now.
+
+Architecturally, we're going also going to implement the necessary ports and adapters to achieve testability. We're passing in our 
