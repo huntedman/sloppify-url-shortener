@@ -124,4 +124,21 @@ The draw back of our approach is that we're going to run out of ID's by the year
 
 If we somehow become popular in a year, we will have a deterministic amount exhausted ID's and we can figure a way around it. Let's keep it simple for now.
 
-Architecturally, we're going also going to implement the necessary ports and adapters to achieve testability. We're passing in our 
+Architecturally, we're going also going to implement the necessary ports and adapters to achieve testability.
+
+## Feat: Integrate shortcode generator with backend api
+So the nice thing about our ports and adapters architecture is that we can create specific instances to serve specific use cases, without having to rewrite parts of our code.
+We have, through the use of interfaces, defined WHAT the code has to do, not the HOW it has to achieve it. 
+
+I personally find this elegant. At the end of the day, software engineering is very similar to logistics. We have to transport some data from point A to B to C. We can choose how it happens, e.g land/sea/air, but we don't have to know whether our pilot is named "John" or whether the truck's license plate ends with "123". We define a contract and it's terms, someone else can take care of the implementation.
+
+In this iteration we hooked up our shortcode generator to the backend api, so given an url like:
+https://www.example.com
+It will get shortened to something like:
+https://sloppify.com/VPELFqt
+
+But for now it's purely cosmetic, because:
+1) We don't persist the link or it's shortened form anywhere
+2) We don't redirect when actually opening the shortened link
+
+Let's tackle both of these issues in the next commit.

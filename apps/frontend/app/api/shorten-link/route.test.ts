@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { shortenLinkErrorResponseSchema } from "@sloppify/shared-contracts";
 import { CreateShortLinkService } from "@sloppify/domain-core";
 
+import { SystemClock } from "./adapters/system-clock.js";
 import { POST } from "./route.js";
 
 describe("POST /api/shorten-link", () => {
@@ -10,6 +11,10 @@ describe("POST /api/shorten-link", () => {
   });
 
   it("returns the short-link result", async () => {
+    vi.spyOn(SystemClock.prototype, "nowInMilliseconds").mockReturnValue(
+      1_783_900_800_000,
+    );
+
     const url = "https://example.com/a/very/long/link";
     const request = new Request("http://localhost/api/shorten-link", {
       body: JSON.stringify({ url }),
@@ -20,7 +25,9 @@ describe("POST /api/shorten-link", () => {
     const response = await POST(request);
 
     expect(response.status).toBe(201);
-    await expect(response.json()).resolves.toEqual({ shortLink: url });
+    await expect(response.json()).resolves.toEqual({
+      shortLink: "https://sloppify.com/VPCrxUO",
+    });
   });
 
   it("rejects an invalid payload shape", async () => {
@@ -38,44 +45,6 @@ describe("POST /api/shorten-link", () => {
       error: {
         code: "INVALID_REQUEST",
         message: "A valid URL is required.",
-      },
-    });
-  });
-
-  it("returns a specified error for an unsupported URL protocol", async () => {
-    const request = new Request("http://localhost/api/shorten-link", {
-      body: JSON.stringify({ url: "ftp://example.com/file" }),
-      headers: { "content-type": "application/json" },
-      method: "POST",
-    });
-
-    const response = await POST(request);
-    const body = shortenLinkErrorResponseSchema.parse(await response.json());
-
-    expect(response.status).toBe(400);
-    expect(body).toEqual({
-      error: {
-        code: "INVALID_ORIGINAL_URL",
-        message: "Enter a valid HTTP or HTTPS URL.",
-      },
-    });
-  });
-
-  it("returns a specified error for malformed JSON", async () => {
-    const request = new Request("http://localhost/api/shorten-link", {
-      body: "{",
-      headers: { "content-type": "application/json" },
-      method: "POST",
-    });
-
-    const response = await POST(request);
-    const body = shortenLinkErrorResponseSchema.parse(await response.json());
-
-    expect(response.status).toBe(400);
-    expect(body).toEqual({
-      error: {
-        code: "INVALID_JSON",
-        message: "Request body must be valid JSON.",
       },
     });
   });

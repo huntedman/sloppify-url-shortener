@@ -6,11 +6,19 @@ import {
 import {
   CreateShortLinkService,
   InvalidOriginalUrlError,
+  UnixTimestampShortCodeGenerator,
 } from "@sloppify/domain-core";
+import { SystemClock } from "./adapters/system-clock";
 
 export const runtime = "nodejs";
 
-const createShortLinkService = new CreateShortLinkService();
+const systemClock = new SystemClock();
+const shortCodeGenerator = new UnixTimestampShortCodeGenerator(systemClock);
+const createShortLinkService = new CreateShortLinkService({
+  shortCodeGenerator,
+  // TODO: Switch to environment based variables
+  baseDomain: "https://sloppify.com",
+});
 
 function badRequest(error: ShortenLinkApiError): Response {
   return Response.json({ error }, { status: 400 });
