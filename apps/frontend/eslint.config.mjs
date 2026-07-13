@@ -5,7 +5,11 @@ export default defineConfig([
   ...nextJsConfig,
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
-    ignores: ["app/api/**/*.{js,mjs,cjs,ts,tsx}"],
+    ignores: [
+      "app/api/**/*.{js,mjs,cjs,ts,tsx}",
+      "app/**/route.{js,mjs,cjs,ts,tsx}",
+      "app/**/route.test.{js,mjs,cjs,ts,tsx}",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -13,7 +17,8 @@ export default defineConfig([
           patterns: [
             {
               group: ["@sloppify/domain-core", "@sloppify/domain-core/*"],
-              message: "Import domain-core only from app/api route handlers.",
+              message:
+                "Import domain-core only from server route handlers and their adapters.",
             },
           ],
         },

@@ -21,6 +21,10 @@ class RecordingShortLinkRepository implements ShortLinkRepository {
   async create(shortLink: NewShortLink): Promise<void> {
     this.shortLinks.push(shortLink);
   }
+
+  findOriginalUrlByShortCode(): Promise<null> {
+    return Promise.resolve(null);
+  }
 }
 
 describe("CreateShortLinkService", () => {

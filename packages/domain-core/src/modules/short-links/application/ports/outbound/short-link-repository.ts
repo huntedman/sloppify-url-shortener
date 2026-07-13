@@ -1,4 +1,4 @@
-import { OriginalUrl } from "../../../domain/original-url.js";
+import type { OriginalUrl } from "../../../domain/original-url.js";
 
 export interface NewShortLink {
   readonly originalUrl: OriginalUrl;
@@ -7,4 +7,5 @@ export interface NewShortLink {
 
 export interface ShortLinkRepository {
   create(params: NewShortLink): Promise<void>;
+  findOriginalUrlByShortCode(shortCode: string): Promise<OriginalUrl | null>;
 }

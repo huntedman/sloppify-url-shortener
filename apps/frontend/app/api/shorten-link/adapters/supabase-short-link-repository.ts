@@ -1,4 +1,8 @@
-import type { NewShortLink, ShortLinkRepository } from "@sloppify/domain-core";
+import {
+  OriginalUrl,
+  type NewShortLink,
+  type ShortLinkRepository,
+} from "@sloppify/domain-core";
 import type { SupabaseClient } from "@supabase/server/peer/supabase-js";
 
 import type { Database } from "../../database.types";
@@ -25,5 +29,23 @@ export class SupabaseShortLinkRepository implements ShortLinkRepository {
         cause: error,
       });
     }
+  }
+
+  async findOriginalUrlByShortCode(
+    shortCode: string,
+  ): Promise<OriginalUrl | null> {
+    const { data, error } = await this._client
+      .from("short_links")
+      .select("original_url")
+      .eq("short_code", shortCode)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error("Failed to retrieve short link.", {
+        cause: error,
+      });
+    }
+
+    return data ? OriginalUrl.create(data.original_url) : null;
   }
 }

@@ -173,3 +173,25 @@ Good practice any time we have to deal with relational databases. Thankfully sup
 **Add Supabase specific repository for storing created links**
 Thanks to the ports and adapters approach it was very straghtforward to set up a relational database layer to the existing app.
 
+## Feat: Add shortlink retrieval and redirect
+We are approaching the end of building our super simple & naive url shortener. As the final use case, we have to:
+- Retrieve the original url from the database when navigating to https://example.com/[shortCode]
+- Redirect user to the original URL
+
+If you've been following along so far, then implementing the final features may already be familiar for you, but to recap:
+- Add db migration to allow service_role to read the short_links table
+- Add a new inbound use case for reading the short link from table (user triggered)
+- Update our short-link-repository to accomodate for reads
+- Update tests
+- Create a nextjs GET route with a redirect
+
+After this commit, we have a functional URL shortener. So let's revisit the user stories and see which ones are left:
+- to submit a link and receive a shortened link in return ✅
+- to be redirected to the original link when shortlink is opened ✅
+- to use the link shortener on mobile (responsive design, etc...) ✅
+- the app to be clear and easy to use (UI/UX) ✅
+- the app to be robust (unit/integration/e2e tests) ✅
+- the app to persist the links over a long period of time (Database) ✅
+- the app to be production ready (deployed somewhere) 🚫
+
+So after this the only thing that's left from the users perspective is to deploy.
