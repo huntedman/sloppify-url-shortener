@@ -12,12 +12,17 @@ import { SystemClock } from "./adapters/system-clock";
 
 export const runtime = "nodejs";
 
+const baseDomain = process.env.SHORT_LINK_BASE_URL;
+
+if (!baseDomain) {
+  throw new Error("SHORT_LINK_BASE_URL is not configured.");
+}
+
 const systemClock = new SystemClock();
 const shortCodeGenerator = new UnixTimestampShortCodeGenerator(systemClock);
 const createShortLinkService = new CreateShortLinkService({
   shortCodeGenerator,
-  // TODO: Switch to environment based variables
-  baseDomain: "https://sloppify.com",
+  baseDomain,
 });
 
 function badRequest(error: ShortenLinkApiError): Response {

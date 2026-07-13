@@ -5,6 +5,10 @@ import { CreateShortLinkService } from "@sloppify/domain-core";
 import { SystemClock } from "./adapters/system-clock.js";
 import { POST } from "./route.js";
 
+vi.hoisted(() => {
+  process.env.SHORT_LINK_BASE_URL = "https://sloppify.com";
+});
+
 describe("POST /api/shorten-link", () => {
   afterEach(() => {
     vi.restoreAllMocks();
