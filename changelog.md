@@ -195,3 +195,9 @@ After this commit, we have a functional URL shortener. So let's revisit the user
 - the app to be production ready (deployed somewhere) 🚫
 
 So after this the only thing that's left from the users perspective is to deploy.
+
+## Feat: Downgrade PNPM
+Unfortunately for us, nextjs doesn't support pnpm 11 yet. The latest they support is pnpm 10.
+So we will have to change our package.json to reflect that and reinstall our dependencies.
+But it shouldn't be a dealbreaker, since we're not relying on any of the major features pnpm 11 introduced.
+We will have to commit and push our changes though for the next step.
