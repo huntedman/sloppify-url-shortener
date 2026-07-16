@@ -2,8 +2,8 @@
 
 ## How it works
 
-Request - Shortened URL: https://sloppify.com/ogp
-Response - Original URL: https://docs.google.com/document/d/abcdefg
+Request - Original URL: https://docs.google.com/document/d/abcdefg
+Response - Shortened URL: https://sloppify.com/ogp
 
 ## User stories
 
@@ -15,7 +15,7 @@ As an user I want:
 - the app to be production ready (deployed somewhere)
 - the app to be clear and easy to use (UI/UX)
 - the app to be robust (unit/integration/e2e tests)
-- the app to persist the links over a long period of time (Database)
+- the app to persist the links over a period of time (Database)
 
 ## Techstack
 
@@ -59,30 +59,31 @@ For example, supabase allows us to build a fully functional backend using their 
 It's a great concept, but in practice, we couple our "business" together with theirs.
 Meaning, if the VC funded startup, at some point decides to "cash in" or start doing things we don't agree with, our whole backend will essentially be hostage.
 
-My general philosophy is not to become over-reliant closed services, but again, let's not think that far ahead, keep the risks in mind, and build the URL shortener :)
+My general philosophy is not to become over-reliant closed services, but again, let's not think that far ahead. Let's just keep the risks in mind, and build the URL shortener :)
 
 ## A note on architecture (Ports And Adapters)
 
-I want to clarify the thought process behind my decision to go with this, to some controversial, decision.
+I want to clarify the thought process behind my decision to go with with this this architecture style.
 
 It might seem like an overkill, for such a simple app to start thinking about it in terms of "ports and adapters".
-It adds abstraction, boilerplating, and confusion if you're not familiar with reasoning about the code in this way.
+It adds abstraction, boilerplating, and confusion if you're not familiar with the pattern.
 
 But at the same time, I find it forces us to think better about WHAT we're building and HOW we're going to structure our code.
-It forces us to ask the questions like "where does this functionality belong?" and "what is the correct direction of dependencies?" before we write any code. A micro decision and foresight can save us from a ton of headache down the line.
 
-It's also easier to test functionality, because anything can be "mocked" and dependency injected.
+It forces us to ask the questions like "where does this functionality belong?" and "what is the correct direction of dependencies?" before we write a single line of code. A micro decision and foresight can save us from a ton of headache down the line.
+
+It's also easier to test functionality, because anything can be "mocked" and injected as a dependency.
 It's easier to extend our app with new features, because nothing is coupled together at the "fundamental" level and we don't have to think about how to "force" something in to our existing featureset.
 
-The biggest tradeoff, by far of this approach, is that other team members may not be as familiar with this sort of frame of thinking when coding. I initially struggled. Because it can feel as if there's a weird ritual and boilerplating. Adding a new feature means we and have to make changes in multiple places.
+The biggest tradeoff, by far of this approach, is that other team members may not be as familiar with this pattern  when coding. I know I initially struggled, because it can feel as if there's a weird ritual around creating interfaces and templates. Adding a new feature means we and have to make changes in multiple places.
 
-But as the complexity of the app grows, the investment to understand, can pay off relatively quickly.
+But as the complexity of the app grows, the investment can pay off relatively quickly.
 
 In our specific case, when we later decide to migrate away from "NextJS as backend" or "move away from postgres to mongodb" as our database provider, none of the "rituals" have to change. We would just have to write a different handler and swap it out in the adapter, keeping the overall flow intact.
 
-## Development
+## Monorepo
 
-This repository is scaffolded as a pnpm and Turborepo monorepo. It requires Node.js 24 and pnpm 11.
+This repository is scaffolded as a pnpm and Turborepo monorepo. It requires Node.js 24 and pnpm 10.
 
 - `apps/frontend` contains the Next.js application.
 - `packages/domain-core` is an empty TypeScript library boundary for future domain code.
@@ -90,30 +91,39 @@ This repository is scaffolded as a pnpm and Turborepo monorepo. It requires Node
 
 Run `nvm use` and `corepack enable` once to select the pinned runtime and package manager. Install dependencies with `pnpm install`, then use `pnpm dev` for local development. Run `pnpm check` to lint, type-check, and verify formatting, or `pnpm build` to create a production build.
 
-### Set up Supabase locally
-
-Local development uses a self-contained Supabase stack and database running in
-Docker. It does not read from or write to the hosted production database. The
-schema is shared between environments through the migration files in
-`supabase/migrations`.
+## Project Setup 
 
 The following setup requires a running Docker-compatible container runtime,
 such as Docker Desktop, OrbStack, Rancher Desktop, or Podman. Run every command
 below from the repository root (the folder which contains `pnpm-workspace.yaml`)
 
-#### 1. Install the dependencies
+To get started, run:
+```bash
+git clone git@github.com:huntedman/sloppify-url-shortener.git
+```
 
+### 1. Install the dependencies
 ```bash
 nvm use
 corepack enable
 pnpm install
 ```
 
+Also create a gitignored local environment file from the provided example:
+```bash
+cp apps/frontend/.env.example apps/frontend/.env.local
+```
+
+### 2. Install Supabase
+
+Local development uses a self-contained Supabase stack and database running in
+Docker. The database schema is ready to be shared between environments through the migration files in `supabase/migrations`.
+
 The Supabase CLI is installed as a workspace development dependency. This
-repository already contains `supabase/config.toml`, so a fresh clone does not
+repository already contains `supabase/config.toml`, so a fresh repository clone does not
 need `supabase init`, `supabase login`, or `supabase link` for local development.
 
-#### 2. Start the local Supabase stack
+### 3. Start the local Supabase stack
 
 Make sure the container runtime is running, then execute:
 
@@ -124,36 +134,18 @@ pnpm exec supabase start
 The first start downloads the required container images, starts the local
 Postgres database and Supabase services, and applies the migrations. The command
 prints the local project URL, publishable key, secret key, database URL, and
-Studio URL. Display the credentials again at any time with:
+Studio URL. 
 
+Make a note of the local urls and credentials and add them to the local environment file we created earlier.
+
+Display the supabase credentials again at any time with:
 ```bash
 pnpm exec supabase status
 ```
 
-Supabase Studio is available by default at <http://127.0.0.1:54323>.
+Never expose supabase secret keys via `NEXT_PUBLIC_` environment variable.
 
-#### 3. Configure the Next.js application
-
-Create the ignored local environment file from the example:
-
-```bash
-cp apps/frontend/.env.example apps/frontend/.env.local
-```
-
-Populate it with the local URL and secret printed by `supabase start` or
-`supabase status`:
-
-```dotenv
-SHORT_LINK_BASE_URL=http://localhost:3000
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_SECRET_KEY=<LOCAL_SECRET_KEY>
-```
-
-The current server-only database adapter does not require the publishable key or
-JWKS URL. Keep the secret key in `.env.local`; never expose it through a
-`NEXT_PUBLIC_` environment variable.
-
-#### 4. Rebuild the local database when the schema changes
+### 4. Rebuild the local database when the schema changes
 
 The first `supabase start` applies the committed migrations automatically. To
 recreate the database and reapply all migrations later, run:
@@ -162,7 +154,7 @@ recreate the database and reapply all migrations later, run:
 pnpm exec supabase db reset
 ```
 
-This deletes local data only. It does not reset the hosted project.
+NB: This will delete all local data.
 
 #### 5. Generate the TypeScript database types
 
@@ -195,7 +187,7 @@ pnpm exec supabase stop
 
 Stopping the containers preserves local database data for the next start.
 
-#### Creating subsequent migrations
+## Creating Migrations
 
 Create a timestamped migration file:
 
