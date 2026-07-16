@@ -39,7 +39,7 @@ export default async function ShortenedPage({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-5 py-16 sm:px-8">
+    <main className="flex min-h-dvh items-center justify-center px-5 py-16 sm:px-8">
       <section
         aria-labelledby="shortened-heading"
         className="w-full max-w-2xl text-center"
