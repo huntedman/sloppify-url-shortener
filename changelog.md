@@ -201,3 +201,85 @@ Unfortunately for us, nextjs doesn't support pnpm 11 yet. The latest they suppor
 So we will have to change our package.json to reflect that and reinstall our dependencies.
 But it shouldn't be a dealbreaker, since we're not relying on any of the major features pnpm 11 introduced.
 We will have to commit and push our changes though for the next step.
+
+## Feat: Deploying to production
+So this is the culmination of our efforts, shipping something tangible to the users.
+As mentioned before, we're not going to the lengths of setting up a server box ourselves,
+although the door is open for us in case we ever want to do so; both Supabase and NextJS are self hostable.
+
+For this simple demo, I think it may be bit of an overkill. 
+Self hosting, In my opinion makes sense once we PROVE our product, meaning:
+1) Our app has daily amount of recurring users
+2) The cost of hosting our app on one of these platforms becomes unbearable
+3) We have in-house specialization for infra
+4) We somehow GAIN in velocity
+5) We are under some unique regulatory constraints
+
+When we evaluate our link shortener against any of these criteria, currently, I don't think there are enough reasons to consider self hosting.
+
+### Supabase
+Let's first tackle the database deployment, since our frontend/backend depend on it.
+If you're following along then you first need to set up an account with supabase and create a new project.
+I think the official docs will do a better job on explaining how to achieve this than, I can put down in writing here.
+
+But once you have everything set up, you want to:
+
+**Login to your supabase account**
+We will authenticate with supabase in order for us to proceed with creating the necessary tables via migration scripts instead of manually clicking through everything.
+```bash
+pnpm exec supabase login
+```
+
+**Link your local project to the cloud project**
+Let's link our local project to the cloud project. This command doesn't do anything fancy,
+it just creates a file at supabase/.temp/project-ref. Essentially we just tell the supabase CLI,
+when we're running any db commands when communicating with the cloud, that is the project ID we want
+to run our commands against.
+```bash
+pnpm exec supabase link --project-ref YOUR_PROJECT_REF_FROM_THE_CLOUD
+```
+
+**Test run the migrations**
+Of course, before running migrations, it's a good idea to check which migrations will actually be run, in order to avoid data loss.
+```bash
+pnpm exec supabase db push --dry-run
+```
+
+**Actually run the migrations**
+Ideally, this command would be ran inside an automated CI/CD pipeline with permissions and OIDC auth, but I think that would also expand the scope of this project a bit too much. But even then it's not "dark magic".
+Plus a CI/CD is something you don't edit on a regular basis, but rather when your project requirements drastically change.
+```bash
+pnpm exec supabase db push
+```
+So I will now go ahead, and take the leap of faith and run the migrations :)
+And it looks like the migrations ran successfully.
+We have an identical table setup in "production" as we do in our local "dev" environment.
+
+### Vercel Cloud
+Next up, let's tackle the frontend/backend deployment.
+Which is a bit more involved.
+
+We first need to import our project into vercel cloud. 
+Currently, the vercel deploy is intelligent enough to deduct all the necessary default values on its own.
+So thankfully we don't have to modify anything.
+
+The only thing that we DO have to do is to import our environment variables.
+So let's make sure we include add all 4:
+```bash
+SHORT_LINK_BASE_URL=
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+```
+
+If we add all these and deploy our project to vercel, it should complete successfully.
+In my case it did.
+
+Which means as the final thing left to do is to 
+1) Configure the DNS  
+2) Validate our link shortener works in production
+
+And now the project is accessible at https://www.sloppify.com :)
+
+Which means, we have fulfilled our last user requirement:
+- the app to be production ready (deployed somewhere) ✅
