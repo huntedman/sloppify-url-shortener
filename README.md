@@ -3,9 +3,10 @@
 ## How it works
 
 Request - Original URL: https://docs.google.com/document/d/abcdefg
-Response - Shortened URL: https://sloppify.com/ogp
 
-## User stories
+Response - Shortened URL: https://sloppify.com/abcdefg
+
+## User stories considered
 
 As an user I want:
 
